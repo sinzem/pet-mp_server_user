@@ -2,14 +2,15 @@ import sequelize from '../../db/postgresql/postgresql';
 import {DataTypes} from 'sequelize'; 
 import { CardData } from '../card/model';
 
-export const UserData = sequelize.define('user', {
+export const UserData = sequelize.define('UserData', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     name: {type: DataTypes.STRING, allowNull: false},
     surname: {type: DataTypes.STRING, allowNull: false},
+    phone: {type: DataTypes.STRING, allowNull: false},
     email: {type: DataTypes.STRING, unique: true, allowNull: false},
     password: {type: DataTypes.STRING, allowNull: false},
-    activation: {type: DataTypes.STRING},
-    refreshToken: {type: DataTypes.STRING},
+    activation: {type: DataTypes.STRING, defaultValue: null},
+    refreshToken: {type: DataTypes.STRING, defaultValue: null},
     role: {type: DataTypes.STRING, defaultValue: "manager"},
     photo: {type: DataTypes.STRING},
 });
@@ -29,3 +30,5 @@ UserData.hasOne(UserProgress);
 UserProgress.belongsTo(UserData);
 
 UserData.hasMany(CardData);
+CardData.belongsTo(UserData);
+

@@ -4,9 +4,11 @@ import express from 'express';
 import cors from 'cors';
 import fileUpload from 'express-fileupload';
 
-import sequelize from './db/postgresql/postgresql';
 import { corsConfig } from './configs/cors.config';
 import router from './routes';
+// import { createUserDataTableQuery, createUserProgressTableQuery } from './entities/user/model';
+// import { createCardDataTableQuery } from './entities/card/model';
+// import db from './db/postgresql/postgresql';
 
 const app = express();
 const port = process.env.PORT || 5001; 
@@ -21,8 +23,16 @@ app.use('/api', router);
 
 const start = async () => { 
     try {
-        await sequelize.authenticate();  
-        // await sequelize.sync(); 
+        // (инициализация таблиц без миграций node-pg-migrate)
+        // db.none(createUserDataTableQuery)
+        //     .then(() => console.log('Table user_data is connected'))
+        //     .catch((e) => console.log(`Error creating UserData table: ${e}`));
+        // db.none(createUserProgressTableQuery)
+        //     .then(() => console.log('Table user_progress is connected'))
+        //     .catch((e) => console.log(`Error creating UserProgress table: ${e}`));
+        // db.none(createCardDataTableQuery)
+        //     .then(() => console.log('Table card_data is connected'))
+        //     .catch((e) => console.log(`Error creating CardData table: ${e}`));
         app.listen(port, () => console.log(`Server started on port: ${port}`)); 
     } catch (e) {
         console.log(e);

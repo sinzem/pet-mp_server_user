@@ -1,34 +1,35 @@
-import sequelize from '../../db/postgresql/postgresql'; 
-import {DataTypes} from 'sequelize'; 
-import { CardData } from '../card/model';
+// export const createUserDataTableQuery = `
+//     CREATE TABLE IF NOT EXISTS user_data (
+//         id BIGSERIAL NOT NULL PRIMARY KEY,
+//         first_name VARCHAR(50) NOT NULL,
+//         last_name VARCHAR(50) NOT NULL,
+//         phone VARCHAR(24) NOT NULL,
+//         email VARCHAR(50) UNIQUE NOT NULL,
+//         password VARCHAR(100) NOT NULL,
+//         activation VARCHAR(100) DEFAULT NULL,
+//         refresh_token VARCHAR(100) DEFAULT NULL,
+//         role VARCHAR(24) DEFAULT 'manager',
+//         photo VARCHAR(100) DEFAULT NULL,
+//         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+//         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+//     )
+// `;
 
-export const UserData = sequelize.define('UserData', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    name: {type: DataTypes.STRING, allowNull: false},
-    surname: {type: DataTypes.STRING, allowNull: false},
-    phone: {type: DataTypes.STRING, allowNull: false},
-    email: {type: DataTypes.STRING, unique: true, allowNull: false},
-    password: {type: DataTypes.STRING, allowNull: false},
-    activation: {type: DataTypes.STRING, defaultValue: null},
-    refreshToken: {type: DataTypes.STRING, defaultValue: null},
-    role: {type: DataTypes.STRING, defaultValue: "manager"},
-    photo: {type: DataTypes.STRING},
-});
+// export const createUserProgressTableQuery = `
+//     CREATE TABLE IF NOT EXISTS user_progress (
+//         id BIGSERIAL NOT NULL PRIMARY KEY,
+//         user_id BIGSERIAL UNIQUE REFERENCES user_data(id) ON DELETE CASCADE, 
+//         balance INTEGER DEFAULT 0,
+//         index INTEGER DEFAULT 0,
+//         clicks INTEGER DEFAULT 0,
+//         hold INTEGER DEFAULT 0,
+//         profit INTEGER DEFAULT 0,
+//         budget INTEGER DEFAULT 0,
+//         notification INTEGER DEFAULT 0,
+//         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+//         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+//     )
+// `;
 
-export const UserProgress = sequelize.define('UserProgress', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    balance: {type: DataTypes.INTEGER, defaultValue: 0},
-    index: {type: DataTypes.INTEGER, defaultValue: 0},
-    clicks: {type: DataTypes.INTEGER, defaultValue: 0},
-    hold: {type: DataTypes.INTEGER, defaultValue: 0},
-    profit: {type: DataTypes.INTEGER, defaultValue: 0},
-    budget: {type: DataTypes.INTEGER, defaultValue: 0},
-    notification: {type: DataTypes.INTEGER, defaultValue: 0},
-});
 
-UserData.hasOne(UserProgress, {foreignKey: 'userId', onDelete: 'CASCADE'});
-UserProgress.belongsTo(UserData, {foreignKey: 'userId'});
-
-UserData.hasMany(CardData, {foreignKey: 'userId', onDelete: 'CASCADE'});
-CardData.belongsTo(UserData, {foreignKey: 'userId'});
 

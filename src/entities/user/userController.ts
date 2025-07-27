@@ -1,16 +1,22 @@
 import {Request, Response} from 'express';
 import bcrypt from 'bcrypt'; 
 import jwt from 'jsonwebtoken'; 
-import { UserData } from '../../db/models'; 
+import db from '../../db/postgresql/postgresql';
 
 
 class UserController {
     async create(req: Request, res: Response) {
-        const {name, surname, phone, email, password} = req.body; 
+        const {first_name, last_name, phone, email, password} = req.body; 
 
-        const user = await UserData.create({name, surname, phone, email, password}); 
-
-        return res.json(user);
+        const result = await db.one(
+            `INSERT INTO user_data(first_name, last_name, phone, email, password)
+             VALUES($1, $2, $3, $4, $5)
+             RETURNING *`,
+            [first_name, last_name, phone, email, password]
+          );
+        
+          return res.status(201).json({message: 'User created successfully', data: result});
+        
     }
 }
 

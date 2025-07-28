@@ -6,6 +6,7 @@ import fileUpload from 'express-fileupload';
 
 import { corsConfig } from './configs/cors.config';
 import router from './routes';
+import { errorHandler } from './middleware/errorHandler';
 // import { createUserDataTableQuery, createUserProgressTableQuery } from './entities/user/model';
 // import { createCardDataTableQuery } from './entities/card/model';
 // import db from './db/postgresql/postgresql';
@@ -18,7 +19,7 @@ app.use(fileUpload({}));
 // app.use(cors(corsConfig())); // - защищенный
 app.use(cors());
 app.use('/api', router);
-
+app.use(errorHandler);
 
 
 const start = async () => { 

@@ -21,8 +21,6 @@ class UserController {
             next(e);
         }
 
-        
-        
     }
 }
 

@@ -15,7 +15,7 @@
         "preserveConstEnums": true,
         "sourceMap": true,
     },
-    "include": ["src/**/*", "migrations"],
+    "include": ["src/**/*", "migrations", "swagger.ts"],
     "exclude": [
         "node_modules",
         "./src/**/*.spec.ts"

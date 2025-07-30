@@ -14,9 +14,9 @@ class UserController {
                  VALUES($1, $2, $3, $4, $5)
                  RETURNING *`,
                 [first_name, last_name, phone, email, password]
-              );
+            );
             
-              return res.status(201).json({message: 'User created successfully', data: result});
+            return res.status(201).json({message: 'User created successfully', data: result});
         } catch (e) {
             next(e);
         }

@@ -1,3 +1,5 @@
+// create tables when starting the server if we do not use migrations
+
 // export const createUserDataTableQuery = `
 //     CREATE TABLE IF NOT EXISTS user_data (
 //         id BIGSERIAL NOT NULL PRIMARY KEY,

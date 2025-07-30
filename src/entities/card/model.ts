@@ -1,3 +1,5 @@
+// create tables when starting the server if we do not use migrations
+
 // export const createCardDataTableQuery = `
 //     CREATE TABLE IF NOT EXISTS card_data (
 //         id BIGSERIAL NOT NULL PRIMARY KEY,

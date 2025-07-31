@@ -1,7 +1,7 @@
 import express from 'express';
 import userController from "./userController";
 import { reqBodyValidate } from '../../middleware/validatiors/reqBodyValidator';
-import { createUserDataSchema } from './schemas/zod/user.schema';
+import { createUserDataSchema } from './schemas/index';
 
 
 const router = express.Router()

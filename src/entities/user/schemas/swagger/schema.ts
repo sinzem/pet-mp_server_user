@@ -1,4 +1,4 @@
-export const CreateUserRequestSchema = {
+export const CreateUserRequest = {
     type: 'object',
     required: ['first_name', 'last_name', 'phone', 'email', 'password'],
     properties: {
@@ -10,7 +10,7 @@ export const CreateUserRequestSchema = {
     },
 };
   
-export const CreateUserResponseSchema = {
+export const CreateUserResponse = {
     type: 'object',
     properties: {
         id: { type: 'string', format: 'uuid' },

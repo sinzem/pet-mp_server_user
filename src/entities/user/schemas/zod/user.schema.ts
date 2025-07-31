@@ -2,7 +2,7 @@
 
 import * as z from 'zod'; 
 
-export const createUserDataSchema = z.object({
+export const createUserData = z.object({
     first_name: z.string()
                  .min(1, 'First name is too short')
                  .max(20, 'First name must be a maximum of 20 characters'),
@@ -18,4 +18,4 @@ export const createUserDataSchema = z.object({
                .max(50, 'Password is too long'),
 });
 
-export type CreateUserDataInput = z.infer<typeof createUserDataSchema>;
+export type CreateUserDataInput = z.infer<typeof createUserData>;

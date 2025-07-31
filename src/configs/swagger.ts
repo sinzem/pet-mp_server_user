@@ -1,7 +1,7 @@
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import { Express } from "express";
-import { CreateUserRequestSchema, CreateUserResponseSchema } from "./entities/user/schemas/swagger/schema";
+import { createUserRequestSchema, createUserResponseSchema } from "../entities/user/schemas/index";
 
 const port = process.env.PORT || 5001; 
 const host = process.env.HOST;
@@ -15,8 +15,8 @@ const options = {
         },
         components: {
             schemas: {
-                CreateUserRequest: CreateUserRequestSchema,
-                CreateUserResponse: CreateUserResponseSchema,
+                CreateUserRequest: createUserRequestSchema,
+                CreateUserResponse: createUserResponseSchema,
             },
         },
         servers: [{ url: `http://${host}:${port}` }],

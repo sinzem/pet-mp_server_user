@@ -4,14 +4,15 @@ import cors from 'cors';
 import express from 'express';
 import router from '../routes';
 import fileUpload from 'express-fileupload';
-import { setupSwagger } from "../swagger";
+import { setupSwagger } from "../configs/swagger";
 import { createServer, Server } from "http";
 
 import { corsConfig } from '../configs/cors.config';
 import { errorHandler } from '../middleware/errorHandler';
 import db from '../db/postgresql/postgresql';
-import { createCardDataTableQuery } from '../entities/card/schemas/postgresql/model';
+import { createCardDataTableQuery } from '../entities/card/schemas/index';
 import { createUserDataTableQuery, createUserProgressTableQuery } from '../entities/user/schemas/index';
+import { logger, morganMiddleware } from '../configs/logger';
 
 
 class App {
@@ -35,6 +36,7 @@ class App {
         setupSwagger(app);
         app.use(express.json())
         app.use(fileUpload({}));
+        app.use(morganMiddleware);
         // app.use(cors(corsConfig())); // - защищенный
         app.use(cors());
         app.use('/api', router);
@@ -66,6 +68,7 @@ class App {
         try {
             // this.createTablesInDB();  // (already created with node-pg-migrate)
             this.server.listen(this.port, () => {
+                logger.info(`Server started on port: ${this.port}`);
                 console.log(`Server started on port: ${this.port}`);
                 console.log(`Swagger is available on: ${this.port}/api-docs`);
             })

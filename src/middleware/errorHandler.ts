@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { ZodError } from "zod";
 import { ApiError } from "../utils/errors/ApiError";
+import { logger } from "../configs/logger";
 
 export function errorHandler(
     err: any, 
@@ -9,6 +10,7 @@ export function errorHandler(
     next: NextFunction
 ) {
     console.error(err);
+    logger.error(err.stack || err.message);
 
     if (err instanceof ZodError) {
         return res.status(400).json({

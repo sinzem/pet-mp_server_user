@@ -1,0 +1,15 @@
+[2025-07-31 19:36:29] INFO: Server started on port: 5051
+[2025-07-31 19:40:30] INFO: Request to create an account
+[2025-07-31 19:40:54] INFO: Request to create an account
+[2025-07-31 19:41:51] INFO: Server started on port: 5051
+[2025-07-31 19:41:56] INFO: Request to create an account
+[2025-07-31 19:41:56] ERROR: error: повторяющееся значение ключа нарушает ограничение уникальности "user_data_email_key"
+    at Parser.parseErrorMessage (G:\WORK\Others\mp\server\user\node_modules\pg-protocol\src\parser.ts:369:69)
+    at Parser.handlePacket (G:\WORK\Others\mp\server\user\node_modules\pg-protocol\src\parser.ts:187:21)
+    at Parser.parse (G:\WORK\Others\mp\server\user\node_modules\pg-protocol\src\parser.ts:102:30)
+    at Socket.<anonymous> (G:\WORK\Others\mp\server\user\node_modules\pg-protocol\src\index.ts:7:48)
+    at Socket.emit (node:events:518:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Socket.Readable.push (node:internal/streams/readable:392:5)
+    at TCP.onStreamRead (node:internal/stream_base_commons:191:23)

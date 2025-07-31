@@ -2,11 +2,13 @@ import {NextFunction, Request, Response} from 'express';
 import bcrypt from 'bcrypt'; 
 import jwt from 'jsonwebtoken'; 
 import db from '../../db/postgresql/postgresql';
+import { logger } from '../../configs/logger';
 
 
 class UserController {
     async create(req: Request, res: Response, next: NextFunction) {
-        const {first_name, last_name, phone, email, password} = req.body; 
+        const {first_name, last_name, phone, email, password} = req.body;
+        logger.info('Request to create an account'); 
 
         try {
             const result = await db.one(

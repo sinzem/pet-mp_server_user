@@ -10,7 +10,7 @@ export function errorHandler(
     next: NextFunction
 ) {
     console.error(err);
-    logger.error(err.stack || err.message);
+    // logger.error(err.stack || err.message);
 
     if (err instanceof ZodError) {
         return res.status(400).json({

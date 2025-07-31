@@ -36,8 +36,8 @@ class App {
         setupSwagger(app);
         app.use(express.json())
         app.use(fileUpload({}));
-        app.use(morganMiddleware);
-        // app.use(cors(corsConfig())); // - защищенный
+        // app.use(morganMiddleware); // - request logging
+        // app.use(cors(corsConfig())); // - protected
         app.use(cors());
         app.use('/api', router);
         app.use(errorHandler);
@@ -68,7 +68,7 @@ class App {
         try {
             // this.createTablesInDB();  // (already created with node-pg-migrate)
             this.server.listen(this.port, () => {
-                logger.info(`Server started on port: ${this.port}`);
+                // logger.info(`Server started on port: ${this.port}`);
                 console.log(`Server started on port: ${this.port}`);
                 console.log(`Swagger is available on: ${this.port}/api-docs`);
             })

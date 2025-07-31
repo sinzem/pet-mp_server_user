@@ -1,5 +1,8 @@
 export type ICorsConfig = {
-    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean | undefined) => void) => void;
+    origin: (
+        origin: string | undefined, 
+        callback: (err: Error | null, allow?: boolean | undefined) => void
+    ) => void;
     methods: string[];
     credentials: boolean;
     allowedHeaders?: string[];

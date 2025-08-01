@@ -5,8 +5,8 @@ import db from '../../db/postgresql/postgresql';
 import { logger } from '../../configs/logger';
 
 
-class UserController {
-    async create(req: Request, res: Response, next: NextFunction) {
+class AuthController {
+    async registration(req: Request, res: Response, next: NextFunction) {
         const {first_name, last_name, phone, email, password} = req.body;
         // logger.info('Request to create an account'); 
         console.log(req.params.id);
@@ -26,12 +26,5 @@ class UserController {
     }
 }
 
-export default new UserController(); 
+export default new AuthController(); 
 
-function generateJwt(id: number, email: string, role: string): string { 
-    return jwt.sign(
-        {id, email, role},  
-        process.env.SECRET_KEY, 
-        {expiresIn: "24h"} 
-    )
-};

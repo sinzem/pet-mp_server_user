@@ -27,6 +27,6 @@ const router = express.Router()
  *             schema:
  *               $ref: '#/components/schemas/CreateUserResponse'
  */
-router.post('/create', reqBodyValidate(createUserDataSchema), userController.create);
+router.post('/create/:id', reqBodyValidate(createUserDataSchema), userController.create);
 
 export default router; 

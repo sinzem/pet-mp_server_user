@@ -1,20 +1,32 @@
+import { UUID } from "crypto";
+
 export type IUserRole = "admin" | "manager" | "affiliate";
 
-export type IUserData = {
-    id: number;
-    name: string;
-    surname: string;
+export type IUserDataAdd = {
+    first_name: string;
+    last_name: string;
     phone: string;
     email: string;
     password: string;
+}
+
+export type IUserDataResult = {
+    id: UUID;
+    first_name: string;
+    last_name: string;
+    phone: string;
+    email: string;
     activation: string | null;
     refreshToken: string | null;
     role: IUserRole;
     photo: string | null;
+    created_at: Date;
+    updated_at: Date;
 }
 
-export type IUserProgress = {
-    id: number;
+export type IUserProgressResult = {
+    id: UUID;
+    user_id: UUID;
     balance: number;
     index: number;
     clicks: number;
@@ -22,4 +34,6 @@ export type IUserProgress = {
     profit: number;
     budget: number;
     notification: number;
+    created_at: Date;
+    updated_at: Date;
 }

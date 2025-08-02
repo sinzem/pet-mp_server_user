@@ -3,6 +3,7 @@ import swaggerUi from "swagger-ui-express";
 import { Express } from "express";
 import { createUserRequestSchema, createUserResponseSchema } from "../entities/user/schemas/index";
 import { registrationUserRequestSchema, registrationUserResponseSchema } from "../entities/autorization/schemas";
+import { messageToAdmin } from "../entities/mailer/schemas";
 
 const port = process.env.PORT || 5001; 
 const host = process.env.HOST;
@@ -19,7 +20,8 @@ const options = {
                 CreateUserRequest: createUserRequestSchema,
                 CreateUserResponse: createUserResponseSchema,
                 RegistrationUserRequest: registrationUserRequestSchema,
-                RegistrationUserResponse: registrationUserResponseSchema
+                RegistrationUserResponse: registrationUserResponseSchema,
+                MessageToAdmin: messageToAdmin
             },
         },
         servers: [{ url: `http://${host}:${port}` }],

@@ -27,6 +27,6 @@ const router = express.Router()
  *             schema:
  *               $ref: '#/components/schemas/RegistrationUserResponse'
  */
-router.post('/auth/:id', reqBodyValidate(registrationUser), authController.registration);
+router.post('/reg/:id', reqBodyValidate(registrationUser), authController.registration);
 
 export default router; 

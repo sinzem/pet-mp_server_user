@@ -16,6 +16,7 @@ export const registrationUserData = z.object({
     password: z.string()
                .min(6, "Password is too short")
                .max(50, 'Password is too long'),
+    save_data: z.boolean()
 });
 
 export type registrationUserInput = z.infer<typeof registrationUserData>;

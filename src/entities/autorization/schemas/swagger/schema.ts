@@ -1,12 +1,13 @@
 export const RegistrationUserRequest = {
     type: 'object',
-    required: ['first_name', 'last_name', 'phone', 'email', 'password'],
+    required: ['first_name', 'last_name', 'phone', 'email', 'password', 'save_data'],
     properties: {
         first_name: { type: 'string', example: 'John' },
         last_name: { type: 'string', example: 'Doe' },
         phone: { type: 'string', example: '+380912345678' },
         email: { type: 'string', format: 'email', example: 'john@example.com' },
         password: { type: 'string', example: 'securePassword123' },
+        save_data: { type: 'boolean', example: true }
     },
 };
   

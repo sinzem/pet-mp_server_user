@@ -8,9 +8,25 @@ export type IUserDataAdd = {
     phone: string;
     email: string;
     password: string;
+    save_data: boolean;
 }
 
-export type IUserDataResult = {
+export type IUserData = {
+    id: UUID;
+    first_name: string;
+    last_name: string;
+    phone: string;
+    email: string;
+    password: string;
+    activation: string | null;
+    refreshToken: string | null;
+    role: IUserRole;
+    photo: string | null;
+    created_at: Date;
+    updated_at: Date;
+}
+
+export type IUserDataToClient = {
     id: UUID;
     first_name: string;
     last_name: string;

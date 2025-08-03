@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'; 
 import db from '../../db/postgresql/postgresql';
 import { logger } from '../../configs/logger';
+import { IUserData, IUserDataToClient } from '../../types/user';
 
 
 class UserController {
@@ -23,6 +24,11 @@ class UserController {
         //     next(e);
         // }
         return res.status(200).json({message: 'User created successfully'})
+    }
+
+    userToClient({id, first_name, last_name, phone, email, password, activation, refreshToken, role, photo, created_at, updated_at}: IUserData): IUserDataToClient {
+        const userToClient = {id, first_name, last_name, phone, email, activation, refreshToken, role, photo, created_at, updated_at};
+        return userToClient as IUserDataToClient;
     }
 }
 

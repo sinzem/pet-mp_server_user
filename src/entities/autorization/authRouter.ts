@@ -29,4 +29,6 @@ const router = express.Router()
  */
 router.post('/reg/:id', reqBodyValidate(registrationUser), authController.registration);
 
+router.get('/confirmation/:id', authController.confirmation);
+
 export default router; 

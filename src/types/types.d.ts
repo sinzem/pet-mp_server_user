@@ -6,3 +6,4 @@ declare module 'swagger-jsdoc';
 declare module 'swagger-ui-express';
 declare module 'morgan';
 declare module 'nodemailer';
+declare module 'cookie-parser';

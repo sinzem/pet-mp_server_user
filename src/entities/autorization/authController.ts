@@ -8,6 +8,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { ApiError } from '../../utils/errors/ApiError';
 import { transporter } from '../mailer/mailerController';
 import userController from '../user/userController';
+import { generateJwt } from '../../utils/errors/jwt';
+import cookieParser from 'cookie-parser';
 
 
 class AuthController {
@@ -15,7 +17,7 @@ class AuthController {
         // logger.info('Request to create an account');
 
         const {first_name, last_name, phone, email, password, save_data} = req.body;
-        const reqRole = req.params.id;
+        const reqRole = req.params.id.trim();
 
         let role: string | null = null;
         if (reqRole === process.env.REG_ADMIN) role = "admin";
@@ -60,7 +62,55 @@ class AuthController {
 
         return res.status(201).json({message: 'Registration success', data: user});  
     }
+
+
+    async confirmation(req: Request, res: Response, next: NextFunction) {
+        // logger.info('Request to confirmation an account');
+
+        const checkLink = req.params.id.trim();
+
+        let user;
+        try {
+            user = await db.oneOrNone(
+                'SELECT * FROM user_data WHERE activation = $1 LIMIT 1',
+                [checkLink]
+            );
+        } catch (e) {
+            next(e)
+        }
+
+        if (!user) throw ApiError.notFound("Request error", "User not found");
+
+        const expireVar = Number(process.env.JWT_REFRESH_EXPIRE) || 15;
+        const rememberUser = user.activation[0] === "1" ? true : false;
+        const refreshToken = generateJwt(user.id, user.email, user.role, String(expireVar + "d"));
+
+        let updated;
+        try {
+            const updatedAt = new Date();
+            updated = await db.one(
+                `UPDATE user_data SET activation = $1, refresh_token = $2, updated_at = $3 WHERE id = $4 RETURNING *`,
+                ["active", refreshToken, updatedAt, user.id]
+            );
+        } catch (e) {
+            next(e)
+        }
+
+        if (!updated) throw ApiError.internal("Server error", "Account verification error");
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: Boolean(process.env.COOKIE_SECURE), 
+            sameSite: 'strict',
+            ...(rememberUser && { maxAge: expireVar * 24 * 60 * 60 * 1000 }),
+        });
+
+        return res.redirect(`${process.env.CLIENT_URL}/users/${user.id}`);  
+    }
 }
 
 export default new AuthController(); 
+
+
+          
 

@@ -1,6 +1,5 @@
 import {NextFunction, Request, Response} from 'express';
 import bcrypt from 'bcrypt'; 
-import jwt from 'jsonwebtoken'; 
 import db from '../../db/postgresql/postgresql';
 import { logger } from '../../configs/logger';
 import { IUserData, IUserDataToClient } from '../../types/user';
@@ -34,10 +33,3 @@ class UserController {
 
 export default new UserController(); 
 
-function generateJwt(id: number, email: string, role: string): string { 
-    return jwt.sign(
-        {id, email, role},  
-        process.env.SECRET_KEY, 
-        {expiresIn: "24h"} 
-    )
-};

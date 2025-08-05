@@ -9,6 +9,7 @@ export type IUserDataAdd = {
     email: string;
     password: string;
     save_data: boolean;
+    role: string;
 }
 
 export type IUserData = {

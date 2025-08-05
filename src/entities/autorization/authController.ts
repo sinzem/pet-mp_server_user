@@ -1,33 +1,34 @@
 import {NextFunction, Request, Response} from 'express';
 import bcrypt from 'bcrypt'; 
-import jwt from 'jsonwebtoken'; 
 import db from '../../db/postgresql/postgresql';
 import { logger } from '../../configs/logger';
 import { IUserDataToClient } from '../../types/user';
 import { v4 as uuidv4 } from 'uuid';
 import { ApiError } from '../../utils/errors/ApiError';
 import { transporter } from '../mailer/mailerController';
-import userController from '../user/userController';
-import { generateJwt } from '../../utils/errors/jwt';
+import { generateJwt } from '../../utils/jwt';
 import cookieParser from 'cookie-parser';
+import { userToClient } from '../../utils/user/user.mapper';
 
 
 class AuthController {
+
     async registration(req: Request, res: Response, next: NextFunction): Promise<Response<any, Record<string, IUserDataToClient>>> {
         // logger.info('Request to create an account');
 
-        const {first_name, last_name, phone, email, password, save_data} = req.body;
-        const reqRole = req.params.id.trim();
+        const {first_name, last_name, phone, email, password, save_data, role} = req.body;
 
-        let role: string | null = null;
-        if (reqRole === process.env.REG_ADMIN) role = "admin";
-        if (reqRole === process.env.REG_MANAGER) role = "manager";
-        if (reqRole === process.env.REG_AFFILIATE) role = "affiliate";
-        if (!role) throw ApiError.badRequest("Bad Request", "Incorrect role specification");
+        let userRole: string | null = null;
+        if (role === process.env.REG_ADMIN) userRole = "admin";
+        if (role === process.env.REG_MANAGER) userRole = "manager";
+        if (role === process.env.REG_AFFILIATE) userRole = "affiliate";
+        if (!userRole) throw ApiError.badRequest("Bad Request", "Incorrect role specification");
     
         let activation = uuidv4();
         const saveData = save_data ? "1" : "0";
         activation = activation.replace(/./, saveData);
+
+        const hashPassword = await bcrypt.hash(password, 5);
 
         let regResult = null;
         try {
@@ -35,13 +36,19 @@ class AuthController {
                 `INSERT INTO user_data(first_name, last_name, phone, email, password, role, activation)
                  VALUES($1, $2, $3, $4, $5, $6, $7)
                  RETURNING *`,
-                [first_name, last_name, phone, email, password, role, activation]
+                [first_name, last_name, phone, email, hashPassword, userRole, activation]
             );
         } catch (e) {
             next(e);
         }
 
         if (!regResult) throw ApiError.conflict("Unexpected error", "Error saving user data");
+
+        try {
+            await db.none(`INSERT INTO user_progress(user_id) VALUES($1)`, [regResult.id]);
+        } catch (e) {
+            next(e);
+        }
 
         const link = `${process.env.SERVER_URL}/api/auth/confirmation/${activation}`;
 
@@ -58,13 +65,13 @@ class AuthController {
             `
             })
 
-        const user = userController.userToClient(regResult);
+        const user = userToClient(regResult);
 
         return res.status(201).json({message: 'Registration success', data: user});  
     }
 
 
-    async confirmation(req: Request, res: Response, next: NextFunction) {
+    async confirmation(req: Request, res: Response, next: NextFunction): Promise<void> {
         // logger.info('Request to confirmation an account');
 
         const checkLink = req.params.id.trim();
@@ -99,14 +106,16 @@ class AuthController {
         if (!updated) throw ApiError.internal("Server error", "Account verification error");
 
         res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            secure: Boolean(process.env.COOKIE_SECURE), 
-            sameSite: 'strict',
+            httpOnly: Boolean(Number(process.env.COOKIE_HTTP_ONLY)),
+            secure: Boolean(Number(process.env.COOKIE_SECURE)), 
+            sameSite: "strict",
             ...(rememberUser && { maxAge: expireVar * 24 * 60 * 60 * 1000 }),
         });
 
-        return res.redirect(`${process.env.CLIENT_URL}/users/${user.id}`);  
+        // return res.redirect(`${process.env.CLIENT_URL}/users/${user.id}`);  
+        return res.redirect(`${process.env.SERVER_URL}/api/user/${user.id}`);  
     }
+
 }
 
 export default new AuthController(); 

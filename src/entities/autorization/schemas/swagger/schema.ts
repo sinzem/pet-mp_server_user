@@ -7,7 +7,8 @@ export const RegistrationUserRequest = {
         phone: { type: 'string', example: '+380912345678' },
         email: { type: 'string', format: 'email', example: 'john@example.com' },
         password: { type: 'string', example: 'securePassword123' },
-        save_data: { type: 'boolean', example: true }
+        role: { type: 'string', example: 'manager123456'},
+        save_data: { type: 'boolean', example: true },
     },
 };
   

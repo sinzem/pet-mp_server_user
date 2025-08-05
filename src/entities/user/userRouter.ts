@@ -8,25 +8,26 @@ const router = express.Router()
 
 /**
  * @openapi
- * /api/user/create:
- *   post:
+ * /api/user/:id:
+ *   get:
  *     tags:
  *       - Users
- *     summary: Creating a new user
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/CreateUserRequest'
+ *     summary: Get user data by ID
+ *     parameters:
+ *      - name: id
+ *        in: path
+ *        required: true
+ *        description: ID of the user
+ *        schema:
+ *           type: string
  *     responses:
- *       201:
- *         description: User created successfully
+ *       200:
+ *         description: User data found successfully
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/CreateUserResponse'
  */
-router.post('/create/:id', reqBodyValidate(createUserDataSchema), userController.create);
+router.get('/:id', userController.getUser);
 
 export default router; 

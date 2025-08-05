@@ -3,6 +3,8 @@ import bcrypt from 'bcrypt';
 import db from '../../db/postgresql/postgresql';
 import { logger } from '../../configs/logger';
 import { IUserData, IUserDataToClient } from '../../types/user';
+import { ApiError } from '../../utils/errors/ApiError';
+import { userToClient } from '../../utils/user/user.mapper';
 
 
 class UserController {
@@ -25,9 +27,21 @@ class UserController {
         return res.status(200).json({message: 'User created successfully'})
     }
 
-    userToClient({id, first_name, last_name, phone, email, password, activation, refreshToken, role, photo, created_at, updated_at}: IUserData): IUserDataToClient {
-        const userToClient = {id, first_name, last_name, phone, email, activation, refreshToken, role, photo, created_at, updated_at};
-        return userToClient as IUserDataToClient;
+
+    async getUser(req: Request, res: Response, next: NextFunction) {
+        const userId = req.params.id.trim();
+
+        let user;
+        try {
+            user = await db.one('SELECT * FROM user_data WHERE id = $1', [userId]);
+        } catch (e) {
+            next(e)
+        }
+        if (!user) throw ApiError.notFound("Request error", "User not found");
+        
+        const userDataResponse = userToClient(user);
+
+        return res.status(200).json({message: "User data found successfully", data: userDataResponse});
     }
 }
 

@@ -12,11 +12,14 @@ export const registrationUserData = z.object({
     phone: z.string()
             .min(13, 'Phone number is too short')
             .max(20, 'Phone number is too long'),
-    email: z.email(),
+    email: z.email().max(100, 'Email is too long'),
     password: z.string()
                .min(6, "Password is too short")
                .max(50, 'Password is too long'),
-    save_data: z.boolean()
+    save_data: z.boolean(),
+    role: z.string()
+           .min(4, 'Role is too short')
+           .max(50, 'Role is too long'),
 });
 
 export type registrationUserInput = z.infer<typeof registrationUserData>;

@@ -2,10 +2,10 @@
   "name": "sinzem",
   "version": "1.0.0",
   "description": "pet_project user_block",
-  "main": "./dist/index.js",
+  "main": "./dist/main.js",
   "type": "commonjs",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/main.ts",
     "migrate": "node-pg-migrate"
   },
   "author": "sinzem",

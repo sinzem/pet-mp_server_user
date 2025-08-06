@@ -1,7 +1,7 @@
 import express from 'express';
 import { reqBodyValidate } from '../../middleware/validatiors/reqBodyValidator';
 import authController from './authController';
-import { registrationUser } from './schemas';
+import { loginUser, registrationUser } from './schemas';
 
 const router = express.Router()
 
@@ -47,5 +47,7 @@ router.post('/reg', reqBodyValidate(registrationUser), authController.registrati
  *         description: The user will be redirected to his personal account page
  */
 router.get('/confirmation/:id', authController.confirmation);
+
+router.post('/login', reqBodyValidate(loginUser), authController.login);
 
 export default router; 

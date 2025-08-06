@@ -8,7 +8,7 @@ const router = express.Router()
 
 /**
  * @openapi
- * /api/user/:id:
+ * /api/user/{id}:
  *   get:
  *     tags:
  *       - Users

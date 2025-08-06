@@ -8,7 +8,7 @@ export type IUserDataAdd = {
     phone: string;
     email: string;
     password: string;
-    save_data: boolean;
+    saveData: boolean;
     role: string;
 }
 
@@ -20,7 +20,7 @@ export type IUserData = {
     email: string;
     password: string;
     activation: string | null;
-    refreshToken: string | null;
+    refresh_token: string | null;
     role: IUserRole;
     photo: string | null;
     created_at: Date;
@@ -34,7 +34,7 @@ export type IUserDataToClient = {
     phone: string;
     email: string;
     activation: string | null;
-    refreshToken: string | null;
+    refresh_token: string | null;
     role: IUserRole;
     photo: string | null;
     created_at: Date;

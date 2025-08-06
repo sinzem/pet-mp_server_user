@@ -1,6 +1,6 @@
 export const RegistrationUserRequest = {
     type: 'object',
-    required: ['first_name', 'last_name', 'phone', 'email', 'password', 'save_data'],
+    required: ['first_name', 'last_name', 'phone', 'email', 'password', 'saveData'],
     properties: {
         first_name: { type: 'string', example: 'John' },
         last_name: { type: 'string', example: 'Doe' },
@@ -8,7 +8,7 @@ export const RegistrationUserRequest = {
         email: { type: 'string', format: 'email', example: 'john@example.com' },
         password: { type: 'string', example: 'securePassword123' },
         role: { type: 'string', example: 'manager123456'},
-        save_data: { type: 'boolean', example: true },
+        saveData: { type: 'boolean', example: true },
     },
 };
   
@@ -26,6 +26,18 @@ export const RegistrationUserResponse = {
         photo: { type: 'string', nullable: true, example: '3fa85f64-5717-4562-b3fc-2c963f66afa6.jpg' },
         created_at: { type: 'string', format: 'date-time', example: '2024-12-01T10:15:30.000Z' },
         updated_at: { type: 'string', format: 'date-time', example: '2024-12-01T10:15:30.000Z' }
+    },
+};
+
+
+export const LoginUserRequest = {
+    type: 'object',
+    required: ['email', 'password', 'forgotPassword', 'saveData'],
+    properties: {
+        email: { type: 'string', format: 'email', example: 'john@example.com' },
+        password: { type: 'string', example: 'securePassword123' },
+        forgotPassword: { type: 'boolean', example: false },
+        saveData: { type: 'boolean', example: true }
     },
 };
 

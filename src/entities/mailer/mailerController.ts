@@ -18,18 +18,18 @@ class MailerController {
 
     async sendMessageToAdmin(req: Request, res: Response, next: NextFunction) {
         // logger.info('Request to send message to addmin'); 
-        const {user_name, email, text} = req.body;
+        const {userName, email, text} = req.body;
 
         try {
             const mailOptions = {
                 from: process.env.MAIL_NAME,
                 to: process.env.MAIL_ADMIN,
-                subject: `New message from ${user_name}`,
+                subject: `New message from ${userName}`,
                 text: text,
                 html: `
                     <div>
                         <h1>New message from Manager Platform</h1>
-                        <p><strong>Name:</strong> ${user_name}</p>
+                        <p><strong>Name:</strong> ${userName}</p>
                         <p><strong>Email:</strong> ${email}</p>
                         <p><strong>Message:</strong> ${text}</p>
                     </div>

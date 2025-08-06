@@ -1,9 +1,13 @@
 import { RegistrationUserRequest as registrationUserRequestSchema, 
-         RegistrationUserResponse as registrationUserResponseSchema } from "./swagger/schema";
-import { registrationUserData as registrationUser } from "./zod/registration.schema";
+         RegistrationUserResponse as registrationUserResponseSchema,
+         LoginUserRequest as loginUserRequestSchema } from "./swagger/schema";
+import { registrationUserData as registrationUser,
+         loginUserData as loginUser} from "./zod/registration.schema";
 
 export {
     registrationUserRequestSchema,
     registrationUserResponseSchema,
-    registrationUser
+    loginUserRequestSchema,
+    registrationUser,
+    loginUser
 }

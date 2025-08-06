@@ -3,7 +3,7 @@
 import * as z from 'zod'; 
 
 export const feedbackDataInp = z.object({
-    user_name: z.string()
+    userName: z.string()
                 .min(1, 'Name is too short')
                 .max(20, 'Name must be a maximum of 20 characters'),
     email: z.email(),

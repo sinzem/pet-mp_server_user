@@ -7,4 +7,6 @@ export type ICardData = {
     cardCvc: number;
     expiry: string;
     system?: string;
+    created_at: Date;
+    updated_at: Date;
 }

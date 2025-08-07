@@ -1,17 +1,17 @@
 import {NextFunction, Request, Response} from 'express';
 import bcrypt from 'bcrypt'; 
 import db from '../../db/postgresql/postgresql';
+import jwt from 'jsonwebtoken';
 import { logger } from '../../configs/logger';
 import { IUserDataToClient } from '../../types/user';
 import { v4 as uuidv4 } from 'uuid';
 import { ApiError } from '../../utils/errors/ApiError';
-import { generateJwt } from '../../utils/jwt/jwtGenerator';
+import { generateJwt, updateRefreshToken } from '../../utils/jwt/jwtGenerator';
 import cookieParser from 'cookie-parser';
 import { userToClient } from '../../utils/user/userMapper';
 import { checkDataForRoleAssignment } from '../../utils/user/userDataCheckers';
 import { getUserByEmail } from '../../utils/user/userGetters';
 import { sendActivationLink } from '../../utils/mailer/sendActivationLink';
-import { dbOne } from '../../utils/db/dbOne';
 
 
 class AuthController {
@@ -29,23 +29,17 @@ class AuthController {
 
         const hashPassword = await bcrypt.hash(password, 5);
 
-        // let regResult = null;
-        // try {
-        //     regResult = await db.one(
-        //         `INSERT INTO user_data(first_name, last_name, phone, email, password, role, activation)
-        //          VALUES($1, $2, $3, $4, $5, $6, $7)
-        //          RETURNING *`,
-        //         [first_name, last_name, phone, email, hashPassword, userRole, activation]
-        //     );
-        // } catch (e) {
-        //     next(e);
-        // }
-
-        // if (!regResult) throw ApiError.conflict("Unexpected error", "Error saving user data");
-        const command = `INSERT INTO user_data(first_name, last_name, phone, email, password, role, activation) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *`;
-        const keys = [first_name, last_name, phone, email, hashPassword, userRole, activation];
-
-        const regResult = await dbOne(command, keys);
+        let regResult = null;
+        try {
+            regResult = await db.one(
+                `INSERT INTO user_data(first_name, last_name, phone, email, password, role, activation)
+                 VALUES($1, $2, $3, $4, $5, $6, $7)
+                 RETURNING *`,
+                [first_name, last_name, phone, email, hashPassword, userRole, activation]
+            );
+        } catch (e) {
+            next(e);
+        }
 
         try {
             await db.none(`INSERT INTO user_progress(user_id) VALUES($1)`, [regResult.id]);
@@ -60,6 +54,7 @@ class AuthController {
         return res.status(201).json({message: "The account activation link has been sent to the user's email", data: user});  
     }
 
+// ====================================================================================
 
     async confirmation(req: Request, res: Response, next: NextFunction): Promise<void> {
         // logger.info('Request to confirmation an account');
@@ -82,23 +77,15 @@ class AuthController {
         const rememberUser = user.activation[0] === "1" ? true : false;
         const refreshToken = generateJwt(user.id, user.email, user.role, String(expireVar + "d"));
 
-        // let updated;
-        // try {
-        //     const updatedAt = new Date();
-        //     updated = await db.one(
-        //         `UPDATE user_data SET activation = $1, refresh_token = $2, updated_at = $3 WHERE id = $4 RETURNING *`,
-        //         ["active", refreshToken, updatedAt, user.id]
-        //     );
-        // } catch (e) {
-        //     next(e)
-        // }
-
-        // if (!updated) throw ApiError.internal("Server error", "Account verification error");
-        const updatedAt = new Date();
-        const command = `UPDATE user_data SET activation = $1, refresh_token = $2, updated_at = $3 WHERE id = $4 RETURNING *`;
-        const keys = ["active", refreshToken, updatedAt, user.id];
-
-        const updated = await dbOne(command, keys);
+        try {
+            const updatedAt = new Date();
+            await db.one(
+                `UPDATE user_data SET activation = $1, refresh_token = $2, updated_at = $3 WHERE id = $4 RETURNING *`,
+                ["active", refreshToken, updatedAt, user.id]
+            );
+        } catch (e) {
+            next(e)
+        }
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: Boolean(Number(process.env.COOKIE_HTTP_ONLY)),
@@ -111,8 +98,9 @@ class AuthController {
         return res.redirect(`${process.env.SERVER_URL}/api/user/${user.id}`);  
     }
 
+// ====================================================================================    
 
-    async login(req: Request, res: Response, next: NextFunction)/* : Promise<Response<any, Record<string, IUserDataToClient>>> */ {
+    async login(req: Request, res: Response, next: NextFunction): Promise<Response<any, Record<string, IUserDataToClient>>> {
         const {email, password, forgotPassword, saveData} = req.body;
 
         const userFromDB = await getUserByEmail(email);
@@ -127,38 +115,36 @@ class AuthController {
         }
         
         const expireVar = Number(process.env.JWT_REFRESH_EXPIRE) || 15;
-        const refreshToken = generateJwt(userFromDB.id, email, userFromDB.role, String(expireVar + "d"));
+        let refreshToken;
+        if (userFromDB.refresh_token) {
+            refreshToken = updateRefreshToken(userFromDB.refresh_token, userFromDB.id, email, userFromDB.role, String(expireVar + "d"));
+        } else {
+            refreshToken = generateJwt(userFromDB.id, email, userFromDB.role, String(expireVar + "d"));
+        }
 
         let activationLink;
         let updatedUser;
-        let command;
-        let keys;
         const updatedAt = new Date();
         if (forgotPassword) {
             activationLink = uuidv4();
-            // try {
-            //     updatedUser = await db.one(
-            //         `UPDATE user_data SET activation = $1, refresh_token = $2, updated_at = $3 WHERE id = $4 RETURNING *`,
-            //         [activationLink, refreshToken, updatedAt, userFromDB.id]
-            //     );
-            // } catch (e) {
-            //     next(e)
-            // }
-            command = `UPDATE user_data SET activation = $1, refresh_token = $2, updated_at = $3 WHERE id = $4 RETURNING *`;
-            keys = [activationLink, refreshToken, updatedAt, userFromDB.id];
+            try {
+                updatedUser = await db.one(
+                    `UPDATE user_data SET activation = $1, refresh_token = $2, updated_at = $3 WHERE id = $4 RETURNING *`,
+                    [activationLink, refreshToken, updatedAt, userFromDB.id]
+                );
+            } catch (e) {
+                next(e)
+            }
         } else {
-            // try {
-            //     updatedUser = await db.one(
-            //         `UPDATE user_data SET refresh_token = $1, updated_at = $2 WHERE id = $3 RETURNING *`,
-            //         [refreshToken, updatedAt, userFromDB.id]
-            //     );
-            // } catch (e) {
-            //     next(e)
-            // }
-            command = `UPDATE user_data SET refresh_token = $1, updated_at = $2 WHERE id = $3 RETURNING *`;
-            keys = [refreshToken, updatedAt, userFromDB.id];
+            try {
+                updatedUser = await db.one(
+                    `UPDATE user_data SET refresh_token = $1, updated_at = $2 WHERE id = $3 RETURNING *`,
+                    [refreshToken, updatedAt, userFromDB.id]
+                );
+            } catch (e) {
+                next(e)
+            }
         }
-        updatedUser = await dbOne(command, keys);
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: Boolean(Number(process.env.COOKIE_HTTP_ONLY)),
@@ -169,7 +155,7 @@ class AuthController {
 
         if (forgotPassword) {
             const link = `${process.env.SERVER_URL}/api/auth/confirmation/${activationLink}`;
-            await sendActivationLink(link, email)
+            await sendActivationLink(link, email);
         } 
 
         const user = userToClient(updatedUser);
@@ -177,7 +163,7 @@ class AuthController {
             ? "The account activation link has been sent to the user's email" 
             : "Successful login to your account";
     
-        return res.status(201).json({message, data: user}); 
+        return res.status(200).json({message, data: user}); 
     }
 
 }

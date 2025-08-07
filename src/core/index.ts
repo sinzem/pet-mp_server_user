@@ -51,8 +51,7 @@ class App {
         return server
     }
 
-    private createTablesInDB(): void {
-        // (initialize tables without migrations node-pg-migrate)
+    private createTablesInDB(): void { // (initialize tables without migrations node-pg-migrate)
         db.none(createUserDataTableQuery)
             .then(() => console.log('Table user_data is connected'))
             .catch((e) => console.log(`Error creating UserData table: ${e}`));

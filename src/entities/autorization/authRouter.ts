@@ -28,6 +28,7 @@ const router = express.Router()
  */
 router.post('/reg', reqBodyValidate(registrationUser), authController.registration);
 
+
 /**
  * @openapi
  * /api/auth/confirmation/:id:
@@ -48,6 +49,28 @@ router.post('/reg', reqBodyValidate(registrationUser), authController.registrati
  */
 router.get('/confirmation/:id', authController.confirmation);
 
+
+/**
+ * @openapi
+ * /api/auth/login:
+ *   post:
+ *     tags:
+ *       - Authorization
+ *     summary: Login 
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginUserRequest'
+ *     responses:
+ *       200:
+ *         description: Successful login, if user has forgotten the password, a login link will be sent to his email
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/RegistrationUserResponse'
+ */
 router.post('/login', reqBodyValidate(loginUser), authController.login);
 
 export default router; 

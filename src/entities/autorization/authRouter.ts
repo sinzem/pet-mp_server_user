@@ -73,4 +73,33 @@ router.get('/confirmation/:id', authController.confirmation);
  */
 router.post('/login', reqBodyValidate(loginUser), authController.login);
 
+
+/**
+ * @openapi
+ * /api/auth/refresh:
+ *   get:
+ *     tags:
+ *       - Authorization
+ *     summary: Get or refresh access token, save to SessionStorage 
+ *     parameters:
+ *       - in: cookie
+ *         name: refreshToken
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Refresh token stored in cookies
+ *     responses:
+ *       200:
+ *         description: Access token created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *                   example: eyJhbGciOiJIUzI1NiIsIn.lsLmNvbSIsInJvbGUiOiJhZG1pbiIsIm.TSDHE9oOyo97PHrKU
+ */
+router.get('/refresh', authController.refresh);
+
 export default router; 

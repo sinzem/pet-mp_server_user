@@ -4,6 +4,7 @@ import cors from 'cors';
 import express from 'express';
 import router from '../routes';
 import fileUpload from 'express-fileupload';
+import cookieParser from 'cookie-parser';
 import { setupSwagger } from "../configs/swagger";
 import { createServer, Server } from "http";
 
@@ -34,7 +35,8 @@ class App {
         const app = express();
 
         setupSwagger(app);
-        app.use(express.json())
+        app.use(express.json());
+        app.use(cookieParser());
         app.use(fileUpload({}));
         // app.use(morganMiddleware); // - request logging
         // app.use(cors(corsConfig())); // - protected

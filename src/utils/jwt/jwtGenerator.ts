@@ -1,8 +1,10 @@
-import jwt from 'jsonwebtoken'; 
+import jwt from 'jsonwebtoken';
+import { IPayloadFromToken } from "../../types/jwt";
+import { ApiError } from '../errors/ApiError'; 
 
-export function generateJwt(id: string, email: string, role: string, expire: string): string { 
+export async function generateJwt(id: string, email: string, role: string, expire: string): Promise<string> { 
     
-    return jwt.sign(
+    return await jwt.sign(
         {id, email, role},  
         String(process.env.JWT_SECRET_KEY), 
         {expiresIn: expire} 
@@ -10,10 +12,10 @@ export function generateJwt(id: string, email: string, role: string, expire: str
 };
 
 
-export function updateRefreshToken(token: string, id: string, email: string, role: string, expire: string): string {
+export async function updateRefreshToken(token: string, id: string, email: string, role: string, expire: string): Promise<string> {
     let decoded: any;
     try {
-        decoded = jwt.verify(token, String(process.env.JWT_SECRET_KEY));
+        decoded = await jwt.verify(token, String(process.env.JWT_SECRET_KEY));
     } catch {
         return generateJwt(id, email, role, expire);
     }
@@ -27,6 +29,15 @@ export function updateRefreshToken(token: string, id: string, email: string, rol
         return generateJwt(id, email, role, expire);
     } else {
         return token;
+    }
+}
+
+
+export const getPayloadByToken = async (token: string): Promise<IPayloadFromToken> => { 
+    try {
+        return await jwt.verify(token, String(process.env.JWT_SECRET_KEY));
+    } catch (e) {
+        throw ApiError.forbidden("Authorization error", "Invalid access token"); 
     }
 }
 

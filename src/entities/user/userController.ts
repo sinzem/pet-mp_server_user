@@ -5,6 +5,7 @@ import { logger } from '../../configs/logger';
 import { IUserData, IUserDataToClient } from '../../types/user';
 import { ApiError } from '../../utils/errors/ApiError';
 import { userToClient } from '../../utils/user/userMapper';
+import { getEntityById } from '../../utils/db/getters';
 
 
 class UserController {
@@ -31,13 +32,15 @@ class UserController {
     async getUser(req: Request, res: Response, next: NextFunction) {
         const userId = req.params.id.trim();
 
-        let user;
-        try {
-            user = await db.one('SELECT * FROM user_data WHERE id = $1', [userId]);
-        } catch (e) {
-            throw ApiError.notFound('Request error', `User was not found by this ID: ${userId}`);
-        }
-        if (!user) throw ApiError.notFound("Request error", "User not found");
+        // let user;
+        // try {
+        //     user = await db.one('SELECT * FROM user_data WHERE id = $1', [userId]);
+        // } catch (e) {
+        //     throw ApiError.notFound('Request error', `User was not found by this ID: ${userId}`);
+        // }
+        // if (!user) throw ApiError.notFound("Request error", "User not found");
+
+        const user = await getEntityById("user_data", userId);
         
         const userDataResponse = userToClient(user);
 

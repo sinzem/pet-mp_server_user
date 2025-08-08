@@ -6,17 +6,18 @@ import { logger } from '../../configs/logger';
 import { IUserDataToClient } from '../../types/user';
 import { v4 as uuidv4 } from 'uuid';
 import { ApiError } from '../../utils/errors/ApiError';
-import { generateJwt, updateRefreshToken } from '../../utils/jwt/jwtGenerator';
-import cookieParser from 'cookie-parser';
+import { generateJwt, getPayloadByToken, updateRefreshToken } from '../../utils/jwt/jwtGenerator';
 import { userToClient } from '../../utils/user/userMapper';
 import { checkDataForRoleAssignment } from '../../utils/user/userDataCheckers';
-import { getUserByEmail } from '../../utils/user/userGetters';
+import { getUserByEmail } from '../../utils/db/getters';
 import { sendActivationLink } from '../../utils/mailer/sendActivationLink';
+import { getEntityById } from '../../utils/db/getters';
+import { ApiResponse } from '../../types/response';
 
 
 class AuthController {
 
-    async registration(req: Request, res: Response, next: NextFunction): Promise<Response<any, Record<string, IUserDataToClient>>> {
+    async registration(req: Request, res: Response<ApiResponse<IUserDataToClient>>, next: NextFunction) {
         // logger.info('Request to create an account');
 
         const {first_name, last_name, phone, email, password, saveData, role} = req.body;
@@ -100,11 +101,10 @@ class AuthController {
 
 // ====================================================================================    
 
-    async login(req: Request, res: Response, next: NextFunction): Promise<Response<any, Record<string, IUserDataToClient>>> {
+    async login(req: Request, res: Response<ApiResponse<IUserDataToClient>>, next: NextFunction) {
         const {email, password, forgotPassword, saveData} = req.body;
-
         const userFromDB = await getUserByEmail(email);
-
+       
         if (userFromDB.activation === null || userFromDB.activation.length > 10) {
             throw ApiError.forbidden("Authorization error", "Confirm your email address"); 
         } 
@@ -166,10 +166,27 @@ class AuthController {
         return res.status(200).json({message, data: user}); 
     }
 
+// ====================================================================================
+
+    async refresh(req: Request, res: Response<ApiResponse<{accessToken: string}>>) {
+        const refreshToken = req.cookies.refreshToken;
+        if (!refreshToken) throw ApiError.unauthorized("Authorization error", "Refresh token not found. Please sign in to continue"); 
+
+        const tokenPayload = await getPayloadByToken(refreshToken);
+
+        const user = await getEntityById("user_data", tokenPayload.id);
+        if (!user || user.activation !== "active" || refreshToken !== user.refresh_token) { 
+            throw ApiError.unauthorized("Authorization error", "Refresh token is not valid, please sign in to continue"); 
+        }
+
+        const expireVar = Number(process.env.JWT_ACCESS_EXPIRE) || 15;
+        const accessToken = await generateJwt(user.id, user.email, user.role, String(expireVar + "m"));
+
+        return res.status(200).json({message: "Access token created successfully", data: {accessToken}})
+    }
 }
 
 export default new AuthController(); 
 
 
-          
 

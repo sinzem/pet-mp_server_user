@@ -1,6 +1,15 @@
-import db from "../../db/postgresql/postgresql";
-import { IUserData } from "../../types/user";
+import db from "../../db/postgresql/postgresql"
 import { ApiError } from "../errors/ApiError";
+import { IUserData } from "../../types/user";
+
+export const getEntityById = async (table: string, id: string) => {
+    try {
+        return await db.one(`SELECT * FROM ${table} WHERE id = $1`, [id])
+    } catch (e) {
+        throw ApiError.notFound('Request error', `Data was not found by this ID: ${id}`);
+    }
+}
+
 
 export const getUserByEmail = async (email: string): Promise<IUserData> => {
     let user;
@@ -12,3 +21,4 @@ export const getUserByEmail = async (email: string): Promise<IUserData> => {
 
     return user;
 }
+

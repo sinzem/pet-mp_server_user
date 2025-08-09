@@ -31,27 +31,6 @@ router.post('/reg', reqBodyValidate(registrationUser), authController.registrati
 
 /**
  * @openapi
- * /api/auth/confirmation/:id:
- *   get:
- *     tags:
- *       - Authorization
- *     summary: User clicks on the link sent to his email to confirm the address
- *     parameters:
- *      - name: id
- *        in: path
- *        required: true
- *        description: ID of the user
- *        schema:
- *           type: string
- *     responses:
- *       200:
- *         description: The user will be redirected to his personal account page
- */
-router.get('/confirmation/:id', authController.confirmation);
-
-
-/**
- * @openapi
  * /api/auth/login:
  *   post:
  *     tags:
@@ -72,6 +51,27 @@ router.get('/confirmation/:id', authController.confirmation);
  *               $ref: '#/components/schemas/RegistrationUserResponse'
  */
 router.post('/login', reqBodyValidate(loginUser), authController.login);
+
+
+/**
+ * @openapi
+ * /api/auth/confirmation/:id:
+ *   get:
+ *     tags:
+ *       - Authorization
+ *     summary: User clicks on the link sent to his email to confirm the address
+ *     parameters:
+ *      - name: id
+ *        in: path
+ *        required: true
+ *        description: ID of the user
+ *        schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: The user will be redirected to his personal account page
+ */
+router.get('/confirmation/:id', authController.confirmation);
 
 
 /**
@@ -101,5 +101,32 @@ router.post('/login', reqBodyValidate(loginUser), authController.login);
  *                   example: eyJhbGciOiJIUzI1NiIsIn.lsLmNvbSIsInJvbGUiOiJhZG1pbiIsIm.TSDHE9oOyo97PHrKU
  */
 router.get('/refresh', authController.refresh);
+
+
+/**
+ * @openapi
+ * /api/auth/logout:
+ *   get:
+ *     tags:
+ *       - Authorization
+ *     summary: Logout (refreshToken will be deleted, on the client side you need to clear the accessToken and redirect to another page) 
+ *     parameters:
+ *       - in: cookie
+ *         name: refreshToken
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Refresh token deleted from cookies and database
+ *     responses:
+ *       200:
+ *         description: Successful logout
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 null
+ */
+router.get('/logout', authController.logout);
 
 export default router; 

@@ -76,7 +76,7 @@ class AuthController {
 
         const expireVar = Number(process.env.JWT_REFRESH_EXPIRE) || 15;
         const rememberUser = user.activation[0] === "1" ? true : false;
-        const refreshToken = generateJwt(user.id, user.email, user.role, String(expireVar + "d"));
+        const refreshToken = await generateJwt(user.id, user.email, user.role, String(expireVar + "d"));
 
         try {
             const updatedAt = new Date();
@@ -117,9 +117,9 @@ class AuthController {
         const expireVar = Number(process.env.JWT_REFRESH_EXPIRE) || 15;
         let refreshToken;
         if (userFromDB.refresh_token) {
-            refreshToken = updateRefreshToken(userFromDB.refresh_token, userFromDB.id, email, userFromDB.role, String(expireVar + "d"));
+            refreshToken = await updateRefreshToken(userFromDB.refresh_token, userFromDB.id, email, userFromDB.role, String(expireVar + "d"));
         } else {
-            refreshToken = generateJwt(userFromDB.id, email, userFromDB.role, String(expireVar + "d"));
+            refreshToken = await generateJwt(userFromDB.id, email, userFromDB.role, String(expireVar + "d"));
         }
 
         let activationLink;
@@ -183,6 +183,26 @@ class AuthController {
         const accessToken = await generateJwt(user.id, user.email, user.role, String(expireVar + "m"));
 
         return res.status(200).json({message: "Access token created successfully", data: {accessToken}})
+    }
+
+// ====================================================================================
+
+    async logout(req: Request, res: Response<ApiResponse<null>>, next: NextFunction) {
+        const refreshToken = req.cookies.refreshToken;
+        if (!refreshToken) throw ApiError.unauthorized("Authorization error", "Refresh token not found. Please sign in to continue");
+        
+        // ------Exit on all devices-----------------------------------------
+        const tokenPayload = await getPayloadByToken(refreshToken);
+        try {
+            await db.none(`UPDATE user_data SET refresh_token = $1 WHERE id = $2`, [null, tokenPayload.id]);
+        } catch (e) {
+            next(e);
+        }
+        // ------------------------------------------------------------------
+
+        res.cookie('refreshToken', null);
+
+        return res.status(200).json({message: "Successful logout", data: null});
     }
 }
 

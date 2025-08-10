@@ -6,6 +6,7 @@ import { IUserData, IUserDataToClient } from '../../types/user';
 import { ApiError } from '../../utils/errors/ApiError';
 import { userToClient } from '../../utils/user/userMapper';
 import { getEntityById } from '../../utils/db/getters';
+import { ApiResponse } from '../../types/response';
 
 
 class UserController {
@@ -29,22 +30,35 @@ class UserController {
     }
 
 
-    async getUser(req: Request, res: Response, next: NextFunction) {
+    async getUser(req: Request, res: Response<ApiResponse<IUserDataToClient>>, next: NextFunction) {
         const userId = req.params.id.trim();
 
-        // let user;
-        // try {
-        //     user = await db.one('SELECT * FROM user_data WHERE id = $1', [userId]);
-        // } catch (e) {
-        //     throw ApiError.notFound('Request error', `User was not found by this ID: ${userId}`);
-        // }
-        // if (!user) throw ApiError.notFound("Request error", "User not found");
-
-        const user = await getEntityById("user_data", userId);
+        let user;
+        try {
+            user = await db.one(`SELECT 
+                ud.*,
+                (
+                    SELECT row_to_json(up.*) 
+                    FROM user_progress up
+                    WHERE up.user_id = ud.id
+                ) AS progress,
+                (
+                    SELECT COALESCE(json_agg(cd.*), '[]')
+                    FROM card_data cd
+                    WHERE cd.user_id = ud.id
+                ) AS cards
+                FROM user_data ud
+                WHERE ud.id = $1`, 
+                [userId]
+            );
+        } catch (e) {
+            console.log(e);
+            throw ApiError.notFound('Request error', `User was not found by this ID: ${userId}`);
+        }
         
-        const userDataResponse = userToClient(user);
+        // const userDataResponse = userToClient(user);
 
-        return res.status(200).json({message: "User data found successfully", data: userDataResponse});
+        return res.status(200).json({message: "User data found successfully", data: user});
     }
 }
 

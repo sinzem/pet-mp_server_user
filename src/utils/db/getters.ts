@@ -4,7 +4,7 @@ import { IUserData } from "../../types/user";
 
 export const getEntityById = async (table: string, id: string) => {
     try {
-        return await db.one(`SELECT * FROM ${table} WHERE id = $1`, [id])
+        return await db.one(`SELECT * FROM ${table} WHERE id = $1`, [id]);
     } catch (e) {
         throw ApiError.notFound('Request error', `Data was not found by this ID: ${id}`);
     }

@@ -23,7 +23,7 @@ export const registrationUserData = z.object({
         .max(50, 'Role is too long'),
 });
 
-export type registrationUserInput = z.infer<typeof registrationUserData>;
+export type IRegistrationUser = z.infer<typeof registrationUserData>;
 
 
 export const loginUserData = z.object({
@@ -35,4 +35,4 @@ export const loginUserData = z.object({
     saveData: z.boolean(),
 });
 
-export type loginUserInput = z.infer<typeof registrationUserData>;
+export type ILoginUser = z.infer<typeof registrationUserData>;

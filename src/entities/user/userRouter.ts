@@ -26,7 +26,7 @@ const router = express.Router()
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/CreateUserResponse'
+ *               $ref: '#/components/schemas/GetUserAllDataResponse'
  */
 router.get('/:id', userController.getUser);
 

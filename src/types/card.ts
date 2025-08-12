@@ -1,12 +1,13 @@
 export type ICardData = {
-    id: number;
+    id: string;
+    user_id: string;
     cardNumber: string;
-    cardNumberHidden?: string;
+    cardNumberHidden: string;
     cardBalance: number;
     initials: string;
     cardCvc: number;
     expiry: string;
-    system?: string;
+    system: string;
     created_at: Date;
     updated_at: Date;
 }

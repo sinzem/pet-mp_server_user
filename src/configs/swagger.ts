@@ -1,12 +1,13 @@
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import { Express } from "express";
-import { createUserRequestSchema, createUserResponseSchema } from "../entities/user/schemas/index";
+import { createUserRequestSchema, createUserResponseSchema, GetUserAllDataResponse, userProgress } from "../entities/user/schemas/index";
 import { loginUserRequestSchema, 
     registrationUserRequestSchema, 
     registrationUserResponseSchema 
 } from "../entities/autorization/schemas";
 import { messageToAdmin } from "../entities/mailer/schemas";
+import { CreateCardRequest, CreateCardResponse } from "../entities/card/schemas";
 
 const port = process.env.PORT || 5001; 
 const host = process.env.HOST;
@@ -25,7 +26,11 @@ const options = {
                 RegistrationUserRequest: registrationUserRequestSchema,
                 RegistrationUserResponse: registrationUserResponseSchema,
                 LoginUserRequest: loginUserRequestSchema,
-                MessageToAdmin: messageToAdmin
+                MessageToAdmin: messageToAdmin,
+                UserProgress: userProgress,
+                CreateCardRequest,
+                CreateCardResponse,
+                GetUserAllDataResponse
             },
         },
         servers: [{ url: `http://${host}:${port}` }],

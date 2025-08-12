@@ -1,4 +1,5 @@
 import { UUID } from "crypto";
+import { ICardData } from "./card";
 
 export type IUserRole = "admin" | "manager" | "affiliate";
 
@@ -10,7 +11,7 @@ export type IUserDataAdd = {
     password: string;
     saveData: boolean;
     role: string;
-}
+};
 
 export type IUserData = {
     id: UUID;
@@ -25,21 +26,17 @@ export type IUserData = {
     photo: string | null;
     created_at: Date;
     updated_at: Date;
+};
+
+export type IUserDataToClient = Omit<IUserData, "password">;
+
+export type IUserAllData = IUserData & {
+    progress: IUserProgressResult;
+    cards: ICardData[];
 }
 
-export type IUserDataToClient = {
-    id: UUID;
-    first_name: string;
-    last_name: string;
-    phone: string;
-    email: string;
-    activation: string | null;
-    refresh_token: string | null;
-    role: IUserRole;
-    photo: string | null;
-    created_at: Date;
-    updated_at: Date;
-}
+export type IUserAllDataToClient = Omit<IUserAllData, "password">;
+
 
 export type IUserProgressResult = {
     id: UUID;
@@ -53,4 +50,4 @@ export type IUserProgressResult = {
     notification: number;
     created_at: Date;
     updated_at: Date;
-}
+};

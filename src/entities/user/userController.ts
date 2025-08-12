@@ -2,7 +2,7 @@ import {NextFunction, Request, Response} from 'express';
 import bcrypt from 'bcrypt'; 
 import db from '../../db/postgresql/postgresql';
 import { logger } from '../../configs/logger';
-import { IUserData, IUserDataToClient } from '../../types/user';
+import { IUserAllData, IUserAllDataToClient, IUserData, IUserDataToClient } from '../../types/user';
 import { ApiError } from '../../utils/errors/ApiError';
 import { userToClient } from '../../utils/user/userMapper';
 import { getEntityById } from '../../utils/db/getters';
@@ -30,10 +30,10 @@ class UserController {
     }
 
 
-    async getUser(req: Request, res: Response<ApiResponse<IUserDataToClient>>, next: NextFunction) {
+    async getUser(req: Request, res: Response<ApiResponse<IUserAllDataToClient>>, next: NextFunction) {
         const userId = req.params.id.trim();
 
-        let user;
+        let user: IUserAllData;
         try {
             user = await db.one(`SELECT 
                 ud.*,
@@ -56,9 +56,9 @@ class UserController {
             throw ApiError.notFound('Request error', `User was not found by this ID: ${userId}`);
         }
         
-        // const userDataResponse = userToClient(user);
+        const userDataResponse = userToClient(user);
 
-        return res.status(200).json({message: "User data found successfully", data: user});
+        return res.status(200).json({message: "User data found successfully", data: userDataResponse});
     }
 }
 

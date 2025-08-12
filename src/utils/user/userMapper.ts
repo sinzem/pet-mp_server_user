@@ -1,6 +1,6 @@
-import { IUserData, IUserDataToClient } from "../../types/user";
+import { IUserAllData, IUserAllDataToClient } from "../../types/user";
 
-export const userToClient = (user: IUserData): IUserDataToClient => {
+export const userToClient = (user: IUserAllData): IUserAllDataToClient => {
     const {password, ...userWithoutPassword} = user;
-    return userWithoutPassword as IUserDataToClient;
+    return userWithoutPassword as IUserAllDataToClient;
 }
